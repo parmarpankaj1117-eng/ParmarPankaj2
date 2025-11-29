@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PARMAR STORE</title>
+
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
+header {
+    background: linear-gradient(45deg,#ff005e,#ff7b00,#ffe600,#3cff00,#00e1ff,#7a00ff);
+    background-size:500% 500%;
+    animation: rainbow 8s infinite linear;
+    padding:15px;
+    color:#fff;
+    text-align:center;
+    font-size:25px;
+    font-weight:bold;
+}
+@keyframes rainbow {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+.category-bar{ display:flex; overflow-x:auto; background:white; padding:10px; gap:10px; border-bottom:2px solid #ddd;}
+.cat{ padding:8px 15px; color:#fff; border-radius:20px; white-space:nowrap; font-size:14px; cursor:pointer; border:none; flex-shrink:0;}
+.cat.all{background:linear-gradient(45deg,#6a00ff,#b300ff);}
+.cat.clothes{background:linear-gradient(45deg,#00eaff,#0078ff);}
+.cat.books{background:linear-gradient(45deg,#ff2e00,#ffa600);}
+.search-wrapper{width:92%; margin:15px auto; position:relative;}
+.search-input{width:100%; padding:12px 45px; font-size:16px; border-radius:30px; border:2px solid #ff6a00; background:#fff; outline:none;}
+#products{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:10px;}
+.product{background:white; padding:10px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.1); text-align:center;}
+.product img{width:100%; height:150px; object-fit:cover; border-radius:10px;}
+.product h3{font-size:15px; margin-top:8px;}
+.product button{background:#ff5722; color:#fff; width:100%; font-size:15px; padding:8px; border:none; margin-top:10px; border-radius:6px;}
+#orderForm{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center;}
+.form-box{background:white; width:90%; max-width:400px; padding:20px; border-radius:10px;}
+.form-box input{width:100%; padding:10px; font-size:16px; margin-top:10px; border:1px solid #888; border-radius:5px;}
+.form-box button{width:100%; padding:12px; font-size:18px; background:green; color:white; margin-top:15px; border:none; border-radius:8px;}
+#closeBtn{background:red !important;}
+@media(min-width:768px){#products{grid-template-columns:repeat(3,1fr);} .product img{height:180px;}}
+@media(min-width:1024px){#products{grid-template-columns:repeat(4,1fr);} header{font-size:32px;}}
+</style>
+</head>
+<body>
+
+<header>PARMAR STORE</header>
+
+<div class="category-bar">
+    <div class="cat all" onclick="filterCategory('all')">All</div>
+    <div class="cat clothes" onclick="filterCategory('clothes')">Clothes</div>
+    <div class="cat books" onclick="filterCategory('books')">Books</div>
+</div>
+
+<div class="search-wrapper">
+    <input id="searchBox" type="text" class="search-input" placeholder="Search products..." onkeyup="searchProduct()">
+</div>
+
+<div id="products">
+    <div class="product" data-name="tshirt" data-cat="clothes">
+        <img src="https://source.unsplash.com/500x500?tshirt">
+        <h3>T-Shirt</h3>
+        <button onclick="openForm('T-Shirt')">Buy Now</button>
+    </div>
+    <div class="product" data-name="jeans pant" data-cat="clothes">
+        <img src="https://source.unsplash.com/500x500?jeans">
+        <h3>Jeans Pant</h3>
+        <button onclick="openForm('Jeans Pant')">Buy Now</button>
+    </div>
+    <div class="product" data-name="Hisabnish book" data-cat="books">
+        <img src="/storage/emulated/0/Pictures/Telegram/IMG_20251128_155612_937.jpg">
+        <h3>Hisabnish Book(હિસાબનીશ અને પેટા હિસાબનીશ બુક)</h3>
+      <b>  <p>₹550 </p></b>
+        <button onclick="openForm('Python Book')">Buy Now</button>
+    </div>
+</div>
+
+<div id="orderForm">
+    <div class="form-box">
+        <h2>Enter Details</h2>
+        <input type="text" id="custName" placeholder="Full Name">
+        <input type="text" id="custMobile" placeholder="Mobile Number">
+        <input type="text" id="custAddress" placeholder="Full Address">
+        <button onclick="submitOrder()">Submit</button>
+        <button id="closeBtn" onclick="closeForm()">Close</button>
+    </div>
+</div>
+
+<script>
+const BOT_TOKEN = "8258216176:AAFNQxAYIEk1bqdDZFBGgMt5t7ZcTBdJPEs";
+const CHAT_ID = "5347569346";
+let selectedProduct = "";
+
+function openForm(product){
+    selectedProduct = product;
+    document.getElementById("orderForm").style.display = "flex";
+}
+function closeForm(){ document.getElementById("orderForm").style.display = "none"; }
+
+function searchProduct(){
+    let q = document.getElementById("searchBox").value.toLowerCase();
+    document.querySelectorAll(".product").forEach(p=>{
+        let name = p.getAttribute("data-name").toLowerCase();
+        p.style.display = name.includes(q) ? "inline-block" : "none";
+    });
+}
+
+function filterCategory(cat){
+    document.querySelectorAll(".product").forEach(p=>{
+        let c = p.getAttribute("data-cat");
+        p.style.display = (cat==='all'||c===cat) ? "inline-block":"none";
+    });
+}
+
+function submitOrder(){
+    let name=document.getElementById("custName").value;
+    let mobile=document.getElementById("custMobile").value;
+    let address=document.getElementById("custAddress").value;
+    if(!name||!mobile||!address){ alert("Please fill all details!"); return; }
+    let message = "📦 *New Order Received!* %0A%0A🛍 *Product:* "+selectedProduct+"%0A👤 *Name:* "+name+"%0A📞 *Mobile:* "+mobile+"%0A🏠 *Address:* "+address;
+    let url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`;
+    fetch(url).then(res=>alert("Order Submitted Successfully!")).catch(err=>alert("Error sending order!"));
+    closeForm();
+}
+</script>
+
+</body>
+</html>
